@@ -1,19 +1,19 @@
 ---
 const {
-  advertiser = 'Local Sponsor',
+  advertiser = 'Divine Signs & Printing',
   label = 'Advertisement',
-  href = '#',
+  href = 'https://www.facebook.com/DivineSignsPrinting',
   image = null,
   alt = '',
-  headline = '',
-  cta = 'Visit Sponsor',
-  placement = 'inline'
+  headline = 'Signs, banners, printing and custom graphics for Central Texas. Tell Divine Signs, “Mari sent me.”',
+  cta = 'Visit Divine Signs',
+  placement = 'banner'
 } = Astro.props;
 ---
 <aside class={`ad-slot ad-slot--${placement}`} aria-label={`${label}: ${advertiser}`}>
   <span class="ad-label">{label}</span>
   <a class="ad-card" href={href} target="_blank" rel="sponsored noopener noreferrer">
-    {image ? <img class="ad-image" src={image} alt={alt} loading="lazy" /> : <div class="ad-placeholder" aria-hidden="true">LOCAL BUSINESS</div>}
+    {image ? <img class="ad-image" src={image} alt={alt} loading="lazy" /> : <div class="ad-placeholder" aria-hidden="true">DIVINE<br/>SIGNS<br/>&amp; PRINTING</div>}
     <div class="ad-copy">
       <strong class="ad-name">{advertiser}</strong>
       {headline && <span class="ad-headline">{headline}</span>}
@@ -24,20 +24,20 @@ const {
 
 <style>
   .ad-slot { margin-block: 1.5rem; }
-  .ad-label { display: block; margin-bottom: .35rem; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-  .ad-card { display: grid; grid-template-columns: minmax(90px, 160px) 1fr; gap: 1rem; min-height: 110px; padding: .75rem; border: 1px solid var(--line); background: var(--surface); text-decoration: none; box-shadow: var(--shadow); align-items: center; }
-  .ad-image, .ad-placeholder { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
-  .ad-placeholder { display: grid; place-items: center; background: var(--paper); color: var(--muted); font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-align: center; padding: .5rem; }
-  .ad-copy { display: grid; gap: .3rem; }
-  .ad-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.2rem; }
-  .ad-headline { color: var(--muted); }
-  .ad-cta { width: fit-content; color: var(--brand); font-weight: 900; border-bottom: 2px solid currentColor; transition: transform .18s ease; }
-  .ad-card:hover .ad-cta { transform: translateX(.2rem); }
-  .ad-slot--banner .ad-card { grid-template-columns: minmax(100px, 220px) 1fr; }
+  .ad-label { display: block; margin-bottom: .35rem; color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; text-align:right; }
+  .ad-card { display: grid; grid-template-columns: minmax(120px, 220px) 1fr; gap: 1.2rem; min-height: 118px; padding: .9rem; border: 1px solid var(--line); background: #071018; color:#fff; text-decoration: none; align-items: center; overflow:hidden; }
+  .ad-image, .ad-placeholder { width: 100%; aspect-ratio: 4 / 2; object-fit: cover; border-right: 1px solid #ffffff28; }
+  .ad-placeholder { display: grid; place-items: center; color: #fff; font-size: .82rem; font-weight: 900; letter-spacing: .1em; text-align: center; padding: .7rem; }
+  .ad-copy { display: grid; gap: .38rem; }
+  .ad-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; color:#fff; }
+  .ad-headline { color: #d6dde2; max-width:70ch; }
+  .ad-cta { width: fit-content; color: #ff4a50; font-weight: 900; border-bottom: 2px solid currentColor; transition: transform .18s ease; }
+  .ad-card:hover .ad-cta { transform: translateX(.25rem); }
   @media (max-width: 520px) {
-    .ad-card, .ad-slot--banner .ad-card { grid-template-columns: 92px 1fr; gap: .75rem; padding: .65rem; }
-    .ad-name { font-size: 1rem; }
-    .ad-headline { font-size: .9rem; }
+    .ad-card { grid-template-columns: 92px 1fr; gap: .75rem; padding: .7rem; }
+    .ad-name { font-size: 1.05rem; }
+    .ad-headline { font-size: .86rem; }
+    .ad-label{text-align:left}
   }
   @media (prefers-reduced-motion: reduce) { .ad-cta { transition: none; } }
 </style>
