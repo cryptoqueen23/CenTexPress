@@ -5,22 +5,38 @@ const {
   href = 'https://www.facebook.com/DivineSignsPrinting',
   image = null,
   alt = '',
-  headline = 'Signs, banners, printing and custom graphics for Central Texas. Tell Divine Signs, “Mari sent me.”',
+  tagline = 'Make your business impossible to miss.',
+  headline = 'Signs, banners, printing and custom graphics for Central Texas businesses, organizations and events. Tell Divine Signs, “Mari sent me.”',
   cta = 'Visit Divine Signs',
-  placement = 'banner'
+  placement = 'banner',
+  startDate = null,
+  durationDays = 30
 } = Astro.props;
+const expiresAt = startDate
+  ? new Date(new Date(startDate).getTime() + durationDays * 86400000).toISOString()
+  : null;
 ---
-<aside class={`ad-slot ad-slot--${placement}`} aria-label={`${label}: ${advertiser}`}>
+<aside class={`ad-slot ad-slot--${placement}`} aria-label={`${label}: ${advertiser}`} data-ad-expires={expiresAt}>
   <span class="ad-label">{label}</span>
   <a class="ad-card" href={href} target="_blank" rel="sponsored noopener noreferrer">
-    {image ? <img class="ad-image" src={image} alt={alt} loading="lazy" /> : <div class="ad-placeholder" aria-hidden="true">DIVINE<br/>SIGNS<br/>&amp; PRINTING</div>}
+    {image ? <img class="ad-image" src={image} alt={alt} loading="lazy" /> : <div class="ad-placeholder" aria-hidden="true">{advertiser}</div>}
     <div class="ad-copy">
       <strong class="ad-name">{advertiser}</strong>
+      {tagline && <span class="ad-tagline">{tagline}</span>}
       {headline && <span class="ad-headline">{headline}</span>}
       <span class="ad-cta">{cta}<span aria-hidden="true"> →</span></span>
     </div>
   </a>
 </aside>
+
+<script>
+  document.querySelectorAll('[data-ad-expires]').forEach((el) => {
+    const expires = el.getAttribute('data-ad-expires');
+    if (expires && Date.now() >= new Date(expires).getTime()) {
+      el.hidden = true;
+    }
+  });
+</script>
 
 <style>
   .ad-slot { margin-block: 1.5rem; }
@@ -30,6 +46,7 @@ const {
   .ad-placeholder { display: grid; place-items: center; color: #fff; font-size: .82rem; font-weight: 900; letter-spacing: .1em; text-align: center; padding: .7rem; }
   .ad-copy { display: grid; gap: .38rem; }
   .ad-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; color:#fff; }
+  .ad-tagline { font-weight: 800; color: #fff; font-size: 1rem; }
   .ad-headline { color: #d6dde2; max-width:70ch; }
   .ad-cta { width: fit-content; color: #ff4a50; font-weight: 900; border-bottom: 2px solid currentColor; transition: transform .18s ease; }
   .ad-card:hover .ad-cta { transform: translateX(.25rem); }
