@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const intakes = [
+  {
+    name: 'Send a News Tip',
+    question: "Know about something CenTex Press should investigate or follow?",
+    cta: 'Send a tip',
+    status: 'soon',
+    note: 'CenTex Press is building a secure way to accept tips. This is not yet connected.',
+  },
+  {
+    name: 'Send a Document',
+    question: 'Have an agenda, contract, public record, email, report, photograph or other document that could help tell a story?',
+    cta: 'Send a document',
+    status: 'soon',
+    note: 'CenTex Press is building a secure way to accept documents. This is not yet connected.',
+  },
+  {
+    name: 'Submit an Event',
+    question: 'Tell Central Texas about a community event.',
+    cta: 'Submit an event',
+    status: 'soon',
+    note: 'Event submission is not yet connected.',
+    secondaryHref: '/events',
+    secondaryLabel: 'See the current calendar',
+  },
+  {
+    name: 'Write for CenTex Press',
+    question: 'Have a perspective, story idea or community issue you want to write about?',
+    cta: 'Become a contributor',
+    status: 'available',
+    href: '/write-for-us',
+  },
+  {
+    name: 'Request a Correction',
+    question: "Think we got something wrong? We want to know.",
+    cta: 'Request a correction',
+    status: 'available',
+    href: '/corrections',
+  },
+  {
+    name: 'Advertise',
+    question: 'Want to put your local business in front of CenTex Press readers?',
+    cta: 'Advertise with CenTex Press',
+    status: 'available',
+    href: '/advertise',
+  },
+];
+---
+<BaseLayout
+  title="Contact | CenTex Press"
+  description="Send CenTex Press a news tip, document, event, story pitch or correction request."
+>
+<SiteHeader />
+<main id="main" class="container contact-page">
+  <header class="contact-head">
+    <h1>Tell us what's happening.</h1>
+    <p class="contact-tagline">Some of the best local stories begin with someone saying: "You should look into this."</p>
+  </header>
+
+  <p class="contact-intro">If something is happening in your community, CenTex Press wants to hear about it. Choose what you want to send us.</p>
+
+  <div class="intake-list">
+    {intakes.map((item) => (
+      <div class="intake-row">
+        <h2>{item.name}</h2>
+        <p>{item.question}</p>
+        {item.status === 'available' ? (
+          <a class="intake-cta" href={item.href}>{item.cta} <span aria-hidden="true">→</span></a>
+        ) : (
+          <div class="intake-unavailable">
+            <span class="intake-badge">Coming soon</span>
+            <p class="intake-note">{item.note}</p>
+            {item.secondaryHref && <a class="intake-secondary" href={item.secondaryHref}>{item.secondaryLabel} <span aria-hidden="true">→</span></a>}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <div class="editorial-note">
+    <p class="editorial-line">Different viewpoints are welcome. Facts are not optional.</p>
+    <p>CenTex Press reviews submissions before publication. Sending something to us does not guarantee that it will be published.</p>
+  </div>
+</main>
+<SiteFooter />
+</BaseLayout>
+
+<style>
+.contact-page{padding-block:clamp(2.5rem,7vw,6rem);max-width:800px}
+.contact-head{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.25rem}
+.contact-head h1{font:900 clamp(2.2rem,6vw,4rem)/.98 Georgia,serif;letter-spacing:-.04em;margin:0 0 .6rem}
+.contact-tagline{font:700 clamp(1rem,2.2vw,1.25rem)/1.35 Georgia,serif;color:var(--brand);margin:0;max-width:55ch}
+.contact-intro{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:65ch;margin-bottom:1rem}
+.intake-list{border-top:1px solid var(--line)}
+.intake-row{padding:1.75rem 0;border-bottom:1px solid var(--line)}
+.intake-row h2{font:800 1.35rem/1.15 Georgia,serif;color:var(--ink);margin:0 0 .5rem}
+.intake-row p{color:var(--muted);margin:0 0 .75rem;max-width:65ch}
+.intake-cta{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:900;color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:.15rem}
+.intake-unavailable{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem}
+.intake-badge{display:inline-flex;align-items:center;color:var(--muted);font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--line);padding:.25rem .55rem}
+.intake-note{color:var(--muted);font-size:.92rem;font-style:italic;margin:0;flex-basis:100%}
+.intake-secondary{color:var(--ink);font-weight:800;text-decoration:none;text-underline-offset:4px;font-size:.92rem}
+.editorial-note{margin-top:2.5rem;padding:1.5rem;border:1px solid var(--line);background:var(--surface)}
+.editorial-line{font-weight:800;color:var(--ink);font-size:1.1rem;margin:0 0 .6rem}
+.editorial-note p:last-child{color:var(--muted);margin:0;max-width:65ch}
+</style>
