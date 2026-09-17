@@ -12,7 +12,6 @@ export const sections = {
   events: ['Events', null, 'Public meetings, community gatherings and upcoming events across Central Texas.'],
   'write-for-us': ['Write for CenTex', null, 'CenTex Press welcomes thoughtful community contributors with different perspectives. Facts and sources come first.'],
   corrections: ['Corrections', null, 'Accuracy matters. Material corrections and clarifications will be documented here.'],
-  advertise: ['Advertise', null, 'Reach Central Texas readers while supporting independent local reporting.'],
   contact: ['Contact', null, 'Send CenTex Press a question, story lead, document or community note.'],
   search: ['Search', null, 'Find published CenTex Press reporting by headline, description or section.'],
 };

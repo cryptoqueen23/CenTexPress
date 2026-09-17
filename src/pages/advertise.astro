@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const tiers = [
+  {
+    name: 'Local Partner',
+    price: '$99',
+    period: '/month',
+    description: 'Designed for local small businesses.',
+    features: [
+      'Business name/logo',
+      'Business link',
+      'Rotating CenTex Press advertising placement',
+      'Inclusion in Local Partners',
+    ],
+  },
+  {
+    name: 'Featured Partner',
+    price: '$199',
+    period: '/month',
+    description: 'More visibility across the site.',
+    features: [
+      'Everything in Local Partner',
+      'More prominent homepage placement',
+      'Section-page rotation',
+      'Higher visibility',
+    ],
+  },
+  {
+    name: 'Sponsored Business Story',
+    price: '$249',
+    period: 'one time',
+    description: 'A clearly labeled sponsored feature letting your business tell its story.',
+    features: [
+      'A written feature about your business',
+      'Prominently labeled "SPONSORED CONTENT"',
+      'Never presented as independent CenTex Press reporting',
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Advertise | CenTex Press"
+  description="Reach engaged Central Texas readers while supporting independent local reporting. Local Partner, Featured Partner and Sponsored Business Story advertising at founding rates."
+>
+<SiteHeader />
+<main id="main" class="container advertise-page">
+  <header class="advertise-head">
+    <h1>Advertise with CenTex Press</h1>
+    <p class="advertise-tagline">Reach engaged Central Texas readers while supporting independent local reporting.</p>
+  </header>
+
+  <p class="advertise-intro">CenTex Press keeps advertising simple: three products, clearly labeled, at founding rates for our earliest local partners.</p>
+
+  <div class="tier-grid">
+    {tiers.map((tier) => (
+      <article class="tier-card">
+        <span class="tier-badge">Founding rate</span>
+        <h2>{tier.name}</h2>
+        <p class="tier-price">{tier.price} <span>{tier.period}</span></p>
+        <p class="tier-description">{tier.description}</p>
+        <ul>
+          {tier.features.map((f) => <li>{f}</li>)}
+        </ul>
+      </article>
+    ))}
+  </div>
+
+  <div class="firewall">
+    <p class="firewall-line">Advertising supports our newsroom but never determines our reporting.</p>
+    <p>Advertisements are always clearly labeled and never disguised as journalism. CenTex Press does not sell sponsorship of Investigations, The Receipts, Corrections, or individual accountability stories.</p>
+  </div>
+
+  <p class="advertise-cta"><a href="/contact">Contact CenTex Press about advertising <span aria-hidden="true">→</span></a></p>
+</main>
+<SiteFooter />
+</BaseLayout>
+
+<style>
+.advertise-page{padding-block:clamp(2.5rem,7vw,6rem);max-width:1000px}
+.advertise-head{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.5rem}
+.advertise-head h1{font:900 clamp(2.2rem,6vw,4rem)/.98 Georgia,serif;letter-spacing:-.04em;margin:0 0 .6rem}
+.advertise-tagline{font:700 clamp(1.1rem,2.4vw,1.4rem)/1.3 Georgia,serif;color:var(--brand);margin:0;max-width:60ch}
+.advertise-intro{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:65ch;margin-bottom:2.5rem}
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2.5rem}
+.tier-card{border:1px solid var(--line);background:var(--surface);padding:1.75rem;display:flex;flex-direction:column;gap:.6rem}
+.tier-badge{width:fit-content;color:var(--brand);font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--brand);padding:.2rem .5rem}
+.tier-card h2{font:800 1.4rem/1.1 Georgia,serif;margin:.4rem 0 0}
+.tier-price{font:900 2rem/1 Georgia,serif;color:var(--ink);margin:0}
+.tier-price span{font-size:.9rem;font-weight:700;color:var(--muted)}
+.tier-description{color:var(--muted);margin:0 0 .4rem}
+.tier-card ul{margin:0;padding-left:1.2rem;color:var(--muted);display:grid;gap:.4rem}
+.firewall{border:1px solid var(--line);background:var(--surface2,var(--surface));padding:1.5rem;margin-bottom:2rem}
+.firewall-line{font-weight:800;color:var(--ink);font-size:1.1rem;margin:0 0 .6rem}
+.firewall p:last-child{color:var(--muted);margin:0;max-width:70ch}
+.advertise-cta a{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:900;color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:.2rem}
+@media(max-width:850px){.tier-grid{grid-template-columns:1fr}}
+</style>

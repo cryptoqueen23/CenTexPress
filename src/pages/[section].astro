@@ -2,12 +2,12 @@
 import { getCollection } from 'astro:content';
 import SectionLayout from '../layouts/SectionLayout.astro';
 import { sections } from '../data/sections.js';
-export function getStaticPaths(){return Object.keys(sections).filter(section=>section!=='about').map(section=>({params:{section}}));}
+export function getStaticPaths(){return Object.keys(sections).filter(section=>section!=='about'&&section!=='advertise').map(section=>({params:{section}}));}
 const key=Astro.params.section; const [title,hook,description]=sections[key];
 const allStories=(await getCollection('stories')).filter(s=>!s.data.draft&&s.data.language==='en').sort((a,b)=>b.data.published.valueOf()-a.data.published.valueOf());
 const receipts=(await getCollection('receipts')).filter(r=>r.data.language==='en').sort((a,b)=>b.data.documentDate.valueOf()-a.data.documentDate.valueOf());
 const now=new Date(); const events=(await getCollection('events')).filter(e=>!e.data.draft&&(e.data.endsAt||e.data.startsAt)>=now).sort((a,b)=>a.data.startsAt.valueOf()-b.data.startsAt.valueOf());
-const sectionName=key?key.charAt(0).toUpperCase()+key.slice(1):''; const stories=key==='latest'?allStories:allStories.filter(s=>s.data.section.toLowerCase()===key); const special=['live-wire','receipts','events','write-for-us','corrections','advertise','contact','search'].includes(key);
+const sectionName=key?key.charAt(0).toUpperCase()+key.slice(1):''; const stories=key==='latest'?allStories:allStories.filter(s=>s.data.section.toLowerCase()===key); const special=['live-wire','receipts','events','write-for-us','corrections','contact','search'].includes(key);
 const storyUrl=s=>`/stories/${s.id.replace(/\.(md|mdx)$/,'')}`;
 ---
 <SectionLayout title={title} hook={hook} description={description}>
@@ -19,6 +19,5 @@ const storyUrl=s=>`/stories/${s.id.replace(/\.(md|mdx)$/,'')}`;
 {key==='contact'&&<><h2>Send a tip or message</h2><p>The submission interface is ready for a secure backend. CenTex Press will not collect names, email addresses, documents or tips until the destination and privacy handling are connected.</p><div class="choices"><a href="/write-for-us"><strong>Write for CenTex</strong><span>Contributor information and editorial standards</span></a><a href="/advertise"><strong>Advertise</strong><span>Local advertising and sponsorship inquiries</span></a><a href="/events"><strong>Events</strong><span>See the public events calendar</span></a></div></>}
 {key==='live-wire'&&<p>See something we should know about? <a href="/contact">Send us a tip <span aria-hidden="true">→</span></a></p>}
 {key==='corrections'&&<><h2>Corrections policy</h2><p>When a material factual error is confirmed, CenTex Press will correct the story and clearly note the change.</p></>}
-{key==='advertise'&&<><h2>Support local reporting. Reach local readers.</h2><p>CenTex Press offers clearly labeled local advertising and sponsorship placements without disguising advertising as journalism.</p><p><a href="/contact">Advertising contact →</a></p></>}
 </SectionLayout>
 <style>.story-list{display:grid}.story-list article{padding:1.5rem 0;border-bottom:1px solid var(--line)}.story-list article>span{color:var(--brand);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.story-list h2{margin:.4rem 0!important}.story-list h2 a{text-decoration:none}.story-list h2 a:hover{text-decoration:underline}.story-list small{color:var(--muted)}.tool-head{padding-bottom:1rem;border-bottom:1px solid var(--line)}.search{margin:1.5rem 0 2rem}.search label{display:block;font-weight:900;margin-bottom:.5rem}.search div{display:flex}.search input{flex:1;min-width:0;padding:.9rem 1rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}.search button{padding:.9rem 1.2rem;border:0;background:var(--brand);color:white;font-weight:900}.choices{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:2rem}.choices a{padding:1.2rem;text-decoration:none;border-right:1px solid var(--line)}.choices a:last-child{border:0}.choices span{display:block;color:var(--muted);font-size:.82rem;margin-top:.3rem}@media(max-width:560px){.search div,.choices{display:grid;grid-template-columns:1fr}.search button{width:100%}.choices a{border-right:0;border-bottom:1px solid var(--line)}} </style>
