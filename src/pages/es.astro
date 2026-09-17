@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+---
+<BaseLayout title="CenTex Press | Español" description="Noticias de Central Texas en español. Diferentes voces. Una comunidad.">
+  <SiteHeader />
+  <main id="main-content" class="container es-page" lang="es">
+    <p class="eyebrow">CENTEX PRESS EN ESPAÑOL</p>
+    <h1>Noticias locales. Documentos públicos. Voces de nuestra comunidad.</h1>
+    <p class="intro">Estamos construyendo la cobertura en español de CenTex Press. Aquí encontrarás noticias de Central Texas en lenguaje claro, con acceso a las fuentes y documentos detrás de nuestras historias.</p>
+    <div class="actions">
+      <a class="primary" href="/">English</a>
+      <a href="/live-wire">CenTex Live</a>
+    </div>
+    <section>
+      <h2>Diferentes voces. Una comunidad.</h2>
+      <p>La versión completa en español crecerá junto con nuestra cobertura. Cuando una historia tenga una traducción revisada, podrás cambiar entre inglés y español directamente desde el artículo.</p>
+    </section>
+  </main>
+</BaseLayout>
+<style>
+.es-page{padding-block:clamp(3rem,8vw,7rem);max-width:900px}.eyebrow{color:var(--brand);font-weight:900;letter-spacing:.12em;font-size:.78rem}.es-page h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(2.5rem,7vw,5.5rem);line-height:.96;letter-spacing:-.045em;margin:.5rem 0 1.4rem}.intro{font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.65;color:var(--muted);max-width:760px}.actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:2rem 0 4rem}.actions a{border:1px solid var(--line);padding:.8rem 1.1rem;text-decoration:none;font-weight:800}.actions .primary{background:var(--brand);border-color:var(--brand);color:white}.es-page section{border-top:1px solid var(--line);padding-top:2rem}.es-page h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.8rem,4vw,3rem);margin:0 0 1rem}.es-page section p{color:var(--muted);line-height:1.7}
+</style>
