@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import SectionLayout from '../layouts/SectionLayout.astro';
 const sections = {
   latest: ['Latest','The newest reporting, updates and community stories from CenTex Press.'],
@@ -17,12 +18,28 @@ const sections = {
   corrections: ['Corrections','Accuracy matters. Material corrections and clarifications will be documented here.'],
   advertise: ['Advertise','Reach Central Texas readers while supporting independent local reporting.'],
   contact: ['Contact','Send CenTex Press a question, story lead, document or community note.'],
-  search: ['Search','Search functionality is being connected to the CenTex Press story and document archive.']
+  search: ['Search','Find published CenTex Press reporting by headline, description or section.']
 };
 export function getStaticPaths(){return Object.keys(sections).map(section=>({params:{section}}));}
 const key = Astro.params.section;
 const [title, description] = sections[key];
+const allStories = (await getCollection('stories')).filter(s=>!s.data.draft && s.data.language==='en').sort((a,b)=>b.data.published.valueOf()-a.data.published.valueOf());
+const sectionName = key ? key.charAt(0).toUpperCase()+key.slice(1) : '';
+const stories = key === 'latest' ? allStories : allStories.filter(s=>s.data.section.toLowerCase()===key);
+const special = ['live-wire','receipts','events','write-for-us','about','corrections','advertise','contact','search'].includes(key);
 ---
 <SectionLayout title={title} description={description}>
-  {key === 'write-for-us' ? <><h2>Different voices belong here.</h2><p>We are building a contributor system for residents who want to report, explain or share a clearly labeled perspective. Submissions will be reviewed before publication.</p><p><a href="/contact">Contact CenTex Press about contributing →</a></p></> : key === 'receipts' ? <><h2>Read the source material.</h2><p>Agendas, budgets, ordinances, contracts, public information records and other source documents will live here alongside the reporting they support.</p></> : key === 'search' ? <><h2>Search is coming next.</h2><p>The route is now live. The next development pass will connect this page to published stories, documents, meetings and topics.</p></> : key === 'contact' ? <><h2>Get in touch.</h2><p>The contact and tip-submission workflow is the next functional form we are connecting. Until it is live, this page will not pretend to submit information anywhere.</p></> : <><h2>This desk is ready.</h2><p>The section route is live and ready for published CenTex Press stories. As the publishing system is connected, stories assigned to this desk will populate here automatically.</p></>}
+{!special && <div class="story-list">{stories.length ? stories.map(story=><article><span>{story.data.section}</span><h2><a href={`/stories/${story.id.replace(/\.(md|mdx)$/,'')}`}>{story.data.title}</a></h2><p>{story.data.description}</p><small>{story.data.published.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · {story.data.author}</small></article>) : <p>No published {sectionName.toLowerCase()} stories yet. New stories will appear here automatically when they are published.</p>}</div>}
+{key === 'write-for-us' && <><h2>Different voices belong here.</h2><p>We welcome residents who want to report, explain or share a clearly labeled perspective. Submissions are reviewed before publication. Facts and sources come first.</p><p><a href="/contact">Contact CenTex Press about contributing →</a></p></>}
+{key === 'receipts' && <><h2>Read the source material.</h2><p>Agendas, budgets, ordinances, contracts, public information records and other source documents will live here alongside the reporting they support.</p></>}
+{key === 'search' && <><h2>Search published stories</h2><form class="search" role="search"><label for="story-search">Search CenTex Press</label><div><input id="story-search" type="search" placeholder="Search headlines, topics or sections" autocomplete="off"/><button type="button">Search</button></div></form><div id="search-results" class="story-list">{allStories.map(story=><article data-search={`${story.data.title} ${story.data.description} ${story.data.section}`.toLowerCase()}><span>{story.data.section}</span><h2><a href={`/stories/${story.id.replace(/\.(md|mdx)$/,'')}`}>{story.data.title}</a></h2><p>{story.data.description}</p></article>)}</div><script is:inline>{`const input=document.querySelector('#story-search');const items=[...document.querySelectorAll('#search-results article')];input?.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();items.forEach(el=>el.hidden=q&&!el.dataset.search.includes(q));});`}</script></>}
+{key === 'contact' && <><h2>Send a tip or message</h2><p>The secure submission backend is not connected yet. We will not collect information until it has a real destination and privacy handling.</p></>}
+{key === 'live-wire' && <><h2>CenTex Live</h2><p>This feed will hold short, attributed local updates and developing information. Full reporting will link to CenTex Press stories.</p></>}
+{key === 'events' && <><h2>Upcoming Central Texas events</h2><p>The events collection is being prepared so expired events can disappear automatically instead of requiring manual homepage cleanup.</p></>}
+{key === 'about' && <><h2>Local reporting built around the record.</h2><p>CenTex Press is independent and digital-first. We cover Central Texas with an emphasis on public documents, clear explanations and community voices.</p></>}
+{key === 'corrections' && <><h2>Corrections policy</h2><p>When a material factual error is confirmed, CenTex Press will correct the story and clearly note the change.</p></>}
+{key === 'advertise' && <><h2>Support local reporting. Reach local readers.</h2><p>CenTex Press offers clearly labeled local advertising and sponsorship placements without disguising advertising as journalism.</p><p><a href="/contact">Ask about advertising →</a></p></>}
 </SectionLayout>
+<style>
+.story-list{display:grid;gap:0}.story-list article{padding:1.5rem 0;border-bottom:1px solid var(--line)}.story-list article>span{color:var(--brand);font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.story-list h2{margin:.4rem 0!important}.story-list h2 a{text-decoration:none}.story-list h2 a:hover{text-decoration:underline}.story-list small{color:var(--muted)}.search{margin:1.5rem 0 2rem}.search label{display:block;font-weight:900;margin-bottom:.5rem}.search div{display:flex}.search input{flex:1;min-width:0;padding:.9rem 1rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}.search button{padding:.9rem 1.2rem;border:0;background:var(--brand);color:white;font-weight:900}@media(max-width:560px){.search div{display:grid}.search button{width:100%}}
+</style>
