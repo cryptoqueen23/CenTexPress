@@ -17,4 +17,34 @@ const stories = defineCollection({
   })
 });
 
-export const collections = { stories };
+const receipts = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/receipts' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    agency: z.string(),
+    documentType: z.enum(['Agenda','Budget','Ordinance','Contract','Public Record','Audit','Report','Other']),
+    documentDate: z.coerce.date(),
+    published: z.coerce.date(),
+    fileUrl: z.string().url(),
+    relatedStory: z.string().optional(),
+    language: z.enum(['en','es']).default('en')
+  })
+});
+
+const events = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/events' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    startsAt: z.coerce.date(),
+    endsAt: z.coerce.date().optional(),
+    venue: z.string(),
+    city: z.string(),
+    organizer: z.string().optional(),
+    url: z.string().url().optional(),
+    draft: z.boolean().default(false)
+  })
+});
+
+export const collections = { stories, receipts, events };
