@@ -11,8 +11,6 @@ featured: false
 draft: false
 language: "en"
 sources: []
-image: "./follow-the-names-infographic.png"
-imageAlt: "Diagram titled 'Follow the Names: Inside Copperas Cove's Civic Leadership Web,' showing City Council at the center connected to Bradi Diaz, Fred Chavez, Vonya Hart, Dale Treadway, John Hale, Howard Hawk, John Gallen, Sean Stevens, Jay Manning and Joan Manning, and their overlapping current and former roles across the Coryell Central Appraisal District, TIRZ No. 2, the Copperas Cove Economic Development Corporation, CCISD's Board of Trustees, the Copperas Cove Education Foundation, and city commissions including Keep Copperas Cove Beautiful, Parks and Recreation, the Public Library, Planning and Zoning, and the Quality of Life Advisory Board."
 ---
 I started looking at who serves on Copperas Cove's boards and public organizations.
 
