@@ -2,12 +2,12 @@
 import { getCollection } from 'astro:content';
 import SectionLayout from '../layouts/SectionLayout.astro';
 import { sections } from '../data/sections.js';
-export function getStaticPaths(){return Object.keys(sections).map(section=>({params:{section}}));}
+export function getStaticPaths(){return Object.keys(sections).filter(section=>section!=='about').map(section=>({params:{section}}));}
 const key=Astro.params.section; const [title,hook,description]=sections[key];
 const allStories=(await getCollection('stories')).filter(s=>!s.data.draft&&s.data.language==='en').sort((a,b)=>b.data.published.valueOf()-a.data.published.valueOf());
 const receipts=(await getCollection('receipts')).filter(r=>r.data.language==='en').sort((a,b)=>b.data.documentDate.valueOf()-a.data.documentDate.valueOf());
 const now=new Date(); const events=(await getCollection('events')).filter(e=>!e.data.draft&&(e.data.endsAt||e.data.startsAt)>=now).sort((a,b)=>a.data.startsAt.valueOf()-b.data.startsAt.valueOf());
-const sectionName=key?key.charAt(0).toUpperCase()+key.slice(1):''; const stories=key==='latest'?allStories:allStories.filter(s=>s.data.section.toLowerCase()===key); const special=['live-wire','receipts','events','write-for-us','about','corrections','advertise','contact','search'].includes(key);
+const sectionName=key?key.charAt(0).toUpperCase()+key.slice(1):''; const stories=key==='latest'?allStories:allStories.filter(s=>s.data.section.toLowerCase()===key); const special=['live-wire','receipts','events','write-for-us','corrections','advertise','contact','search'].includes(key);
 const storyUrl=s=>`/stories/${s.id.replace(/\.(md|mdx)$/,'')}`;
 ---
 <SectionLayout title={title} hook={hook} description={description}>
@@ -18,7 +18,6 @@ const storyUrl=s=>`/stories/${s.id.replace(/\.(md|mdx)$/,'')}`;
 {key==='search'&&<><h2>Search published stories</h2><form class="search" role="search"><label for="story-search">Search CenTex Press</label><div><input id="story-search" type="search" placeholder="Search headlines, topics or sections" autocomplete="off"/><button type="button">Search</button></div></form><div id="search-results" class="story-list">{allStories.map(story=><article data-search={`${story.data.title} ${story.data.description} ${story.data.section}`.toLowerCase()}><span>{story.data.section}</span><h2><a href={storyUrl(story)}>{story.data.title}</a></h2><p>{story.data.description}</p></article>)}</div><script is:inline>{`const input=document.querySelector('#story-search');const items=[...document.querySelectorAll('#search-results article')];input?.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();items.forEach(el=>el.hidden=q&&!el.dataset.search.includes(q));});`}</script></>}
 {key==='contact'&&<><h2>Send a tip or message</h2><p>The submission interface is ready for a secure backend. CenTex Press will not collect names, email addresses, documents or tips until the destination and privacy handling are connected.</p><div class="choices"><a href="/write-for-us"><strong>Write for CenTex</strong><span>Contributor information and editorial standards</span></a><a href="/advertise"><strong>Advertise</strong><span>Local advertising and sponsorship inquiries</span></a><a href="/events"><strong>Events</strong><span>See the public events calendar</span></a></div></>}
 {key==='live-wire'&&<p>See something we should know about? <a href="/contact">Send us a tip <span aria-hidden="true">→</span></a></p>}
-{key==='about'&&<><h2>Local reporting built around the record.</h2><p>CenTex Press is independent and digital-first. We cover Central Texas with an emphasis on public documents, clear explanations and community voices.</p></>}
 {key==='corrections'&&<><h2>Corrections policy</h2><p>When a material factual error is confirmed, CenTex Press will correct the story and clearly note the change.</p></>}
 {key==='advertise'&&<><h2>Support local reporting. Reach local readers.</h2><p>CenTex Press offers clearly labeled local advertising and sponsorship placements without disguising advertising as journalism.</p><p><a href="/contact">Advertising contact →</a></p></>}
 </SectionLayout>
