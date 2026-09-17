@@ -1,0 +1,43 @@
+---
+const {
+  advertiser = 'Local Sponsor',
+  label = 'Advertisement',
+  href = '#',
+  image = null,
+  alt = '',
+  headline = '',
+  cta = 'Visit Sponsor',
+  placement = 'inline'
+} = Astro.props;
+---
+<aside class={`ad-slot ad-slot--${placement}`} aria-label={`${label}: ${advertiser}`}>
+  <span class="ad-label">{label}</span>
+  <a class="ad-card" href={href} target="_blank" rel="sponsored noopener noreferrer">
+    {image ? <img class="ad-image" src={image} alt={alt} loading="lazy" /> : <div class="ad-placeholder" aria-hidden="true">LOCAL BUSINESS</div>}
+    <div class="ad-copy">
+      <strong class="ad-name">{advertiser}</strong>
+      {headline && <span class="ad-headline">{headline}</span>}
+      <span class="ad-cta">{cta}<span aria-hidden="true"> →</span></span>
+    </div>
+  </a>
+</aside>
+
+<style>
+  .ad-slot { margin-block: 1.5rem; }
+  .ad-label { display: block; margin-bottom: .35rem; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .ad-card { display: grid; grid-template-columns: minmax(90px, 160px) 1fr; gap: 1rem; min-height: 110px; padding: .75rem; border: 1px solid var(--line); background: var(--surface); text-decoration: none; box-shadow: var(--shadow); align-items: center; }
+  .ad-image, .ad-placeholder { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+  .ad-placeholder { display: grid; place-items: center; background: var(--paper); color: var(--muted); font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-align: center; padding: .5rem; }
+  .ad-copy { display: grid; gap: .3rem; }
+  .ad-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.2rem; }
+  .ad-headline { color: var(--muted); }
+  .ad-cta { width: fit-content; color: var(--brand); font-weight: 900; border-bottom: 2px solid currentColor; transition: transform .18s ease; }
+  .ad-card:hover .ad-cta { transform: translateX(.2rem); }
+  .ad-slot--banner .ad-card { grid-template-columns: minmax(100px, 220px) 1fr; }
+  @media (max-width: 520px) {
+    .ad-card, .ad-slot--banner .ad-card { grid-template-columns: 92px 1fr; gap: .75rem; padding: .65rem; }
+    .ad-name { font-size: 1rem; }
+    .ad-headline { font-size: .9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ad-cta { transition: none; } }
+</style>
