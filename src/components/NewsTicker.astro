@@ -1,43 +1,43 @@
 ---
-const FEED_URL = 'https://www.google.com/alerts/feeds/06216087127701347144/12024562057337739454';
-const localTerms = ['copperas cove','coryell','gatesville','killeen','fort hood','bell county','lampasas','kemper','central texas','ccisd','copperas cove isd','gatesville isd'];
-const junkTerms = ['coupon','shopping','sale','deal','amazon','ebay','pinterest','obituary','horoscope','lottery','celebrity','recipe'];
-const trustedHints = ['.gov','kwtx','kcentv','kdhnews','statesman','fox44news','temple','killeen','copperas','gatesville','coryell','lampasas'];
-const clean = (s='') => s.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]*>/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/\s+/g,' ').trim();
-const tag = (block,name) => clean(block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)<\\/${name}>`,'i'))?.[1] || '');
-const attrLink = (block) => block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || tag(block,'link');
-let items = [];
-try {
-  const res = await fetch(FEED_URL, { headers: { 'User-Agent': 'CenTexPress/1.0' } });
-  if (res.ok) {
-    const xml = await res.text();
-    const blocks = [...xml.matchAll(/<(entry|item)\b[\s\S]*?<\/\1>/gi)].map(m=>m[0]);
-    items = blocks.map(block => ({
-      title: tag(block,'title'),
-      link: attrLink(block),
-      summary: tag(block,'summary') || tag(block,'description'),
-      published: tag(block,'published') || tag(block,'updated') || tag(block,'pubDate')
-    })).filter(item => {
-      const hay = `${item.title} ${item.summary} ${item.link}`.toLowerCase();
-      const local = localTerms.some(term=>hay.includes(term));
-      const junk = junkTerms.some(term=>hay.includes(term));
-      const trusted = trustedHints.some(term=>hay.includes(term));
-      return item.title && item.link && !junk && (local || trusted);
-    }).slice(0,12);
-  }
-} catch {}
+const FEED_URLS = [
+  'https://www.google.com/alerts/feeds/06216087127701347144/2641948236984536074',
+  'https://www.google.com/alerts/feeds/06216087127701347144/16725158625857398981',
+  'https://www.google.com/alerts/feeds/06216087127701347144/14158007006402028422',
+  'https://www.google.com/alerts/feeds/06216087127701347144/10987992935396880387',
+  'https://www.google.com/alerts/feeds/06216087127701347144/12024562057337739454',
+  'https://www.google.com/alerts/feeds/06216087127701347144/6055422325229224555',
+  'https://www.google.com/alerts/feeds/06216087127701347144/13331200608399096138',
+  'https://www.google.com/alerts/feeds/06216087127701347144/6443056713699249503'
+];
+const strongLocal = ['copperas cove','coryell county','gatesville','killeen','fort cavazos','fort hood','bell county','lampasas','kemper','nolanville','harker heights','belton','temple texas','central texas','ccisd','copperas cove isd','gatesville isd','killeen isd'];
+const civicTerms = ['city council','commissioners court','school board','county judge','mayor','budget','tax','water','sewer','ordinance','election','development','police','fire department','public records','isd','county','city of'];
+const reject = ['coupon','shopping','sale','deal','amazon','ebay','pinterest','horoscope','lottery','celebrity','recipe','sports betting','gambling','crypto price','stock price','real estate listing','homes for sale','apartments for rent','jobs hiring','job opening'];
+const sourceHints = ['.gov','kwtx','kcentv','kdhnews','fox44news','statesman','texastribune','tpr.org','kut.org','communityimpact','mysanantonio'];
+const clean=(s='')=>s.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]*>/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/\s+/g,' ').trim();
+const tag=(block,name)=>clean(block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)<\\/${name}>`,'i'))?.[1]||'');
+const attrLink=(block)=>block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1]||tag(block,'link');
+const parseDate=(value)=>{const t=Date.parse(value);return Number.isNaN(t)?0:t};
+const parseFeed=(xml)=>[...xml.matchAll(/<(entry|item)\b[\s\S]*?<\/\1>/gi)].map(m=>m[0]).map(block=>({title:tag(block,'title'),link:attrLink(block),summary:tag(block,'summary')||tag(block,'description'),published:tag(block,'published')||tag(block,'updated')||tag(block,'pubDate')}));
+let raw=[];
+try{
+  const results=await Promise.allSettled(FEED_URLS.map(async url=>{const res=await fetch(url,{headers:{'User-Agent':'CenTexPress/1.0'}});if(!res.ok)return [];return parseFeed(await res.text())}));
+  raw=results.flatMap(r=>r.status==='fulfilled'?r.value:[]);
+}catch{}
+const seen=new Set();
+const items=raw.filter(item=>{
+  if(!item.title||!item.link)return false;
+  const hay=`${item.title} ${item.summary} ${item.link}`.toLowerCase();
+  if(reject.some(term=>hay.includes(term)))return false;
+  const local=strongLocal.some(term=>hay.includes(term));
+  const civic=civicTerms.some(term=>hay.includes(term));
+  const credible=sourceHints.some(term=>hay.includes(term));
+  if(!local && !(credible&&civic))return false;
+  const key=item.title.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  if(seen.has(key))return false;
+  seen.add(key);return true;
+}).sort((a,b)=>parseDate(b.published)-parseDate(a.published)).slice(0,18);
 ---
-{items.length > 0 && <aside class="news-ticker" aria-label="Latest news from external sources">
-  <div class="ticker-inner container">
-    <strong class="ticker-label"><span aria-hidden="true"></span>Latest News</strong>
-    <div class="ticker-window">
-      <div class="ticker-track">
-        {[...items,...items].map((item)=><a href={item.link} target="_blank" rel="noopener noreferrer"><b>{item.title}</b><small>External source</small></a>)}
-      </div>
-    </div>
-    <a class="ticker-more" href="/live-wire">Live Wire →</a>
-  </div>
-</aside>}
+{items.length>0&&<aside class="news-ticker" aria-label="Latest news from external sources"><div class="ticker-inner container"><strong class="ticker-label"><span aria-hidden="true"></span>Latest News</strong><div class="ticker-window"><div class="ticker-track">{[...items,...items].map(item=><a href={item.link} target="_blank" rel="noopener noreferrer"><b>{item.title}</b><small>External source</small></a>)}</div></div><a class="ticker-more" href="/live-wire">Live Wire →</a></div></aside>}
 <style>
-.news-ticker{background:#a9161d;color:#fff;border-bottom:1px solid rgba(255,255,255,.2);overflow:hidden}.ticker-inner{height:38px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1rem}.ticker-label{display:flex;align-items:center;gap:.45rem;text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;white-space:nowrap}.ticker-label span{width:7px;height:7px;border-radius:50%;background:#fff}.ticker-window{overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent)}.ticker-track{display:flex;width:max-content;align-items:center;animation:ticker 55s linear infinite}.ticker-track:hover{animation-play-state:paused}.ticker-track a{display:flex;align-items:center;gap:.55rem;color:#fff;text-decoration:none;white-space:nowrap;font-size:.78rem;padding-right:2.5rem}.ticker-track a::after{content:'•';opacity:.55;margin-left:2rem}.ticker-track small{opacity:.72;font-size:.64rem;text-transform:uppercase;letter-spacing:.06em}.ticker-more{color:#fff;text-decoration:none;font-size:.72rem;font-weight:900;white-space:nowrap}@keyframes ticker{to{transform:translateX(-50%)}}@media(max-width:650px){.ticker-inner{grid-template-columns:auto minmax(0,1fr);gap:.65rem}.ticker-more{display:none}.ticker-label{font-size:.66rem}.ticker-track a{font-size:.74rem}.ticker-track small{display:none}}@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;overflow-x:auto}.ticker-window{overflow-x:auto}}
+.news-ticker{background:#a9161d;color:#fff;border-bottom:1px solid rgba(255,255,255,.2);overflow:hidden}.ticker-inner{height:38px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1rem}.ticker-label{display:flex;align-items:center;gap:.45rem;text-transform:uppercase;letter-spacing:.09em;font-size:.72rem;white-space:nowrap}.ticker-label span{width:7px;height:7px;border-radius:50%;background:#fff}.ticker-window{overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent)}.ticker-track{display:flex;width:max-content;align-items:center;animation:ticker 70s linear infinite}.ticker-track:hover{animation-play-state:paused}.ticker-track a{display:flex;align-items:center;gap:.55rem;color:#fff;text-decoration:none;white-space:nowrap;font-size:.78rem;padding-right:2.5rem}.ticker-track a::after{content:'•';opacity:.55;margin-left:2rem}.ticker-track small{opacity:.72;font-size:.64rem;text-transform:uppercase;letter-spacing:.06em}.ticker-more{color:#fff;text-decoration:none;font-size:.72rem;font-weight:900;white-space:nowrap}@keyframes ticker{to{transform:translateX(-50%)}}@media(max-width:650px){.ticker-inner{grid-template-columns:auto minmax(0,1fr);gap:.65rem}.ticker-more{display:none}.ticker-label{font-size:.66rem}.ticker-track a{font-size:.74rem}.ticker-track small{display:none}}@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;overflow-x:auto}.ticker-window{overflow-x:auto}}
 </style>
