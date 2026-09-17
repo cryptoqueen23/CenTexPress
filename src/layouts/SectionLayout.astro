@@ -2,7 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-const { title, eyebrow = 'CenTex Press', description, actionHref = '/', actionLabel = 'Back to home' } = Astro.props;
+const { title, eyebrow = 'CenTex Press', hook, description, actionHref = '/', actionLabel = 'Back to home' } = Astro.props;
 ---
 <BaseLayout title={`${title} | CenTex Press`} description={description}>
   <SiteHeader />
@@ -10,6 +10,7 @@ const { title, eyebrow = 'CenTex Press', description, actionHref = '/', actionLa
     <header class="page-head">
       <span class="eyebrow">{eyebrow}</span>
       <h1>{title}</h1>
+      {hook && <p class="hook">{hook}</p>}
       {description && <p>{description}</p>}
     </header>
     <section class="page-body"><slot /></section>
@@ -18,5 +19,6 @@ const { title, eyebrow = 'CenTex Press', description, actionHref = '/', actionLa
   <SiteFooter />
 </BaseLayout>
 <style>
-.page{padding-block:clamp(2.5rem,7vw,6rem);min-height:70vh}.page-head{max-width:850px;border-bottom:2px solid var(--ink);padding-bottom:1.5rem}.eyebrow{color:var(--brand);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.page-head h1{font:900 clamp(2.8rem,8vw,6.5rem)/.92 Georgia,serif;letter-spacing:-.05em;margin:.5rem 0 1rem}.page-head p{font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.65;color:var(--muted);max-width:70ch}.page-body{padding-block:2rem;max-width:850px}.page-body :global(h2){font:800 2rem/1.05 Georgia,serif}.page-body :global(p){line-height:1.7;color:var(--muted)}.page-body :global(a){color:var(--ink);font-weight:800;text-underline-offset:4px}.back{display:inline-flex;margin-top:1rem;color:var(--ink);font-weight:900;text-decoration:none;border-bottom:2px solid var(--brand);padding-bottom:.2rem}
+.page{padding-block:clamp(2.5rem,7vw,6rem);min-height:70vh}.page-head{max-width:850px;border-bottom:2px solid var(--ink);padding-bottom:1.5rem}.eyebrow{color:var(--brand);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.page-head h1{font:900 clamp(2.8rem,8vw,6.5rem)/.92 Georgia,serif;letter-spacing:-.05em;margin:.5rem 0 1rem}.page-head p{font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.65;color:var(--muted);max-width:70ch}
+.page-head p.hook{font-weight:800;color:var(--ink);margin-bottom:.35rem}.page-body{padding-block:2rem;max-width:850px}.page-body :global(h2){font:800 2rem/1.05 Georgia,serif}.page-body :global(p){line-height:1.7;color:var(--muted)}.page-body :global(a){color:var(--ink);font-weight:800;text-underline-offset:4px}.back{display:inline-flex;margin-top:1rem;color:var(--ink);font-weight:900;text-decoration:none;border-bottom:2px solid var(--brand);padding-bottom:.2rem}
 </style>
