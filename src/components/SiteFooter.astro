@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+---
+<footer>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <Image src={logo} alt="" width={56} height={56} loading="lazy" />
+      <div><strong>CenTex Press</strong><p>Different voices. One community.</p></div>
+    </div>
+    <div><a href="/about">About</a> · <a href="/corrections">Corrections</a> · <a href="/advertise">Advertise</a> · <a href="/contact">Contact</a></div>
+    <p>Independent Central Texas community news.</p>
+  </div>
+</footer>
+<style>
+footer{padding:3rem 0;border-top:1px solid var(--line)}
+.footer-grid{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+.footer-grid>p{grid-column:1/-1;color:var(--muted)}
+.footer-brand{display:flex;align-items:center;gap:.85rem}
+.footer-brand img{width:56px;height:56px;border-radius:8px;flex-shrink:0}
+@media(max-width:850px){.footer-grid{grid-template-columns:1fr}}
+</style>
