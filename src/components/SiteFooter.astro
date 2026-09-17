@@ -10,6 +10,16 @@ import logo from '../assets/logo.png';
     </div>
     <div><a href="/about">About</a> · <a href="/corrections">Corrections</a> · <a href="/advertise">Advertise</a> · <a href="/support">Support Us</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy</a> · <a href="/accessibility">Accessibility</a></div>
     <p>Independent local journalism for Central Texas.</p>
+    <div class="phoenix-row">
+      <a class="phoenix-credit" href="https://www.tree.phoenixsecuritas.com" target="_blank" rel="noopener noreferrer">
+        <svg class="flywheel-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+          <circle cx="12" cy="12" r="2.1" fill="currentColor" />
+          <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.8 5.8l2.6 2.6M15.6 15.6l2.6 2.6M18.2 5.8l-2.6 2.6M8.4 15.6l-2.6 2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        <span>Created by Phoenix Tech</span>
+      </a>
+    </div>
   </div>
 </footer>
 <style>
@@ -18,5 +28,11 @@ footer{padding:3rem 0;border-top:1px solid var(--line)}
 .footer-grid>p{grid-column:1/-1;color:var(--muted)}
 .footer-brand{display:flex;align-items:center;gap:.85rem}
 .footer-brand img{width:56px;height:56px;border-radius:8px;flex-shrink:0}
+.phoenix-row{grid-column:1/-1;display:flex;justify-content:center;margin-top:.5rem}
+.phoenix-credit{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:0 .5rem;color:var(--muted);text-decoration:none;font-size:.78rem;font-weight:700}
+.phoenix-credit:hover{color:var(--ink)}
+.flywheel-icon{width:16px;height:16px;flex-shrink:0;animation:phoenix-spin 6s linear infinite;transform-origin:center}
+@keyframes phoenix-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.flywheel-icon{animation:none}}
 @media(max-width:850px){.footer-grid{grid-template-columns:1fr}}
 </style>
