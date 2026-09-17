@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 export async function getStaticPaths(){
@@ -9,17 +10,22 @@ export async function getStaticPaths(){
 const { story } = Astro.props;
 const { Content } = await render(story);
 const sectionHref = `/${story.data.section.toLowerCase()}`;
+const kicker = story.data.opinionCategory
+  ? `${story.data.opinionCategory}${story.data.columnName ? ` | ${story.data.columnName}` : ''}`
+  : story.data.section;
 ---
 <BaseLayout title={`${story.data.title} | CenTex Press`} description={story.data.description}>
 <SiteHeader />
 <main id="main" class="container article-wrap">
 <article>
-<header class="article-head"><a class="section" href={sectionHref}>{story.data.section}</a><h1>{story.data.title}</h1><p class="dek">{story.data.description}</p><div class="byline">By <strong>{story.data.author}</strong> · <time datetime={story.data.published.toISOString()}>{story.data.published.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</time></div></header>
+<header class="article-head"><a class="section" href={sectionHref}>{kicker}</a><h1>{story.data.title}</h1><p class="dek">{story.data.description}</p><div class="byline">By <strong>{story.data.author}</strong>{story.data.authorRole && <> · {story.data.authorRole}</>} · <time datetime={story.data.published.toISOString()}>{story.data.published.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</time></div></header>
+{story.data.image && <Image class="article-hero" src={story.data.image} alt={story.data.imageAlt || ''} />}
 <div class="article-body"><Content /></div>
+{story.data.opinionCategory === 'Community Voices' && <p class="opinion-disclaimer">The views expressed are those of the author and do not necessarily reflect the views of CenTex Press.</p>}
 {story.data.sources.length > 0 && <aside class="receipts"><span>The Receipts</span><h2>Sources</h2><ul>{story.data.sources.map(source=><li><a href={source.url} rel="noopener noreferrer">{source.label}</a></li>)}</ul></aside>}
 </article>
 </main>
 </BaseLayout>
 <style>
-.article-wrap{max-width:900px;padding-block:clamp(2.5rem,7vw,6rem)}.article-head{border-bottom:1px solid var(--line);padding-bottom:2rem}.section{color:var(--brand);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.article-head h1{font:900 clamp(2.7rem,7vw,5.8rem)/.96 Georgia,serif;letter-spacing:-.045em;margin:.7rem 0 1rem}.dek{font-size:clamp(1.1rem,2.2vw,1.4rem);line-height:1.55;color:var(--muted);max-width:70ch}.byline{margin-top:1.5rem;color:var(--muted)}.article-body{max-width:720px;margin:2.5rem auto;font-size:1.08rem;line-height:1.8}.article-body :global(h2){font:800 2rem/1.1 Georgia,serif;margin-top:2.2rem}.article-body :global(p){margin:1.2rem 0}.receipts{max-width:720px;margin:3rem auto;border-top:3px solid var(--brand);background:var(--surface);padding:1.5rem}.receipts>span{color:var(--brand);font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.receipts h2{font-family:Georgia,serif}.receipts a{color:var(--ink);font-weight:800}
+.article-wrap{max-width:900px;padding-block:clamp(2.5rem,7vw,6rem)}.article-hero{width:100%;height:auto;margin-top:2rem;border:1px solid var(--line)}.article-head{border-bottom:1px solid var(--line);padding-bottom:2rem}.section{color:var(--brand);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.article-head h1{font:900 clamp(2.7rem,7vw,5.8rem)/.96 Georgia,serif;letter-spacing:-.045em;margin:.7rem 0 1rem}.dek{font-size:clamp(1.1rem,2.2vw,1.4rem);line-height:1.55;color:var(--muted);max-width:70ch}.byline{margin-top:1.5rem;color:var(--muted)}.article-body{max-width:720px;margin:2.5rem auto;font-size:1.08rem;line-height:1.8}.article-body :global(h2){font:800 2rem/1.1 Georgia,serif;margin-top:2.2rem}.article-body :global(p){margin:1.2rem 0}.receipts{max-width:720px;margin:3rem auto;border-top:3px solid var(--brand);background:var(--surface);padding:1.5rem}.receipts>span{color:var(--brand);font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.receipts h2{font-family:Georgia,serif}.receipts a{color:var(--ink);font-weight:800}.opinion-disclaimer{max-width:720px;margin:2rem auto 0;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--muted);font-style:italic;font-size:.95rem}
 </style>

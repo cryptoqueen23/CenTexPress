@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 
 const stories = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/stories' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
     section: z.enum(['Local','Government','Schools','Business','Community','Investigations','Opinion']),
@@ -13,7 +13,12 @@ const stories = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     language: z.enum(['en','es']).default('en'),
-    sources: z.array(z.object({ label: z.string(), url: z.string().url() })).default([])
+    sources: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+    image: image().optional(),
+    imageAlt: z.string().optional(),
+    opinionCategory: z.enum(['From the Publisher','Community Voices','Letters to the Editor']).optional(),
+    authorRole: z.string().optional(),
+    columnName: z.string().optional()
   })
 });
 
