@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const DONATE_URL = 'https://www.paypal.com/donate/?hosted_button_id=7JYUXQUQKPJBL';
+const amounts = [5, 10, 25];
+---
+<BaseLayout
+  title="Support CenTex Press | CenTex Press"
+  description="Reader support is voluntary and never unlocks the news. It helps keep CenTex Press reporting free and available to everyone."
+>
+<SiteHeader />
+<main id="main" class="container support-page">
+  <header class="support-head">
+    <h1>Support CenTex Press</h1>
+    <p class="support-tagline">Readers read free. Businesses advertise. Readers who want to help can contribute.</p>
+  </header>
+
+  <p class="support-message">Supporting CenTex Press doesn't unlock the news. It helps keep the news available to everyone.</p>
+
+  <div class="amount-row" role="group" aria-label="Choose a support amount">
+    {amounts.map((amount) => (
+      <a class="amount-btn" href={`${DONATE_URL}&amount=${amount}`} aria-label={`Support CenTex Press with $${amount}`}>${amount}</a>
+    ))}
+    <a class="amount-btn amount-other" href={DONATE_URL} aria-label="Support CenTex Press with another amount">Other</a>
+  </div>
+
+  <p class="support-note">Reader support is voluntary. Ordinary CenTex Press reporting, Government Watch, investigations and The Receipts are never paywalled.</p>
+</main>
+<SiteFooter />
+</BaseLayout>
+
+<style>
+.support-page{padding-block:clamp(2.5rem,7vw,6rem);max-width:700px}
+.support-head{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.5rem}
+.support-head h1{font:900 clamp(2.2rem,6vw,4rem)/.98 Georgia,serif;letter-spacing:-.04em;margin:0 0 .6rem}
+.support-tagline{font:700 clamp(1rem,2.2vw,1.25rem)/1.35 Georgia,serif;color:var(--brand);margin:0;max-width:55ch}
+.support-message{font-size:1.15rem;font-weight:800;color:var(--ink);max-width:55ch;margin:0 0 2rem}
+.amount-row{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem}
+.amount-btn{display:inline-flex;align-items:center;justify-content:center;min-width:80px;min-height:44px;padding:.8rem 1.4rem;border:1px solid var(--brand);text-decoration:none;font-weight:900;font-size:1.05rem;color:#fff;background:var(--brand);transition:transform .18s ease,background .18s ease}
+.amount-btn:hover{background:var(--brand-strong);transform:translateY(-2px)}
+.amount-other{background:transparent;color:var(--ink);border-color:var(--line)}
+.amount-other:hover{background:var(--surface);border-color:var(--brand);color:var(--ink)}
+.support-note{color:var(--muted);max-width:60ch;line-height:1.7}
+@media(prefers-reduced-motion:reduce){.amount-btn{transition:none}}
+</style>
