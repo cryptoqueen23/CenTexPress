@@ -57,3 +57,4 @@ const events = defineCollection({
 });
 
 export const collections = { stories, receipts, events };
+TEST: race condition check Fri Sep 18 16:30:07 CDT 2026
