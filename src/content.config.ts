@@ -16,9 +16,13 @@ const stories = defineCollection({
     sources: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
     image: image().optional(),
     imageAlt: z.string().optional(),
+    imageCredit: z.string().optional(),
     opinionCategory: z.enum(['From the Publisher','Community Voices','Letters to the Editor']).optional(),
     authorRole: z.string().optional(),
-    columnName: z.string().optional()
+    columnName: z.string().optional(),
+    correctionsNote: z.string().optional(),
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional()
   })
 });
 

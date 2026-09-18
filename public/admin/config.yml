@@ -3,6 +3,9 @@ backend:
   repo: cryptoqueen23/CenTexPress
   branch: main
   base_url: https://centex-press-cms-auth.truewolfflix777.workers.dev
+  open_authoring: true
+
+publish_mode: editorial_workflow
 
 site_url: https://centexpress.xyz
 display_url: https://centexpress.xyz
@@ -68,6 +71,11 @@ collections:
         widget: string
         required: false
         hint: "Describe what the image actually shows — required for accessibility if an image is set."
+      - label: Image credit
+        name: imageCredit
+        widget: string
+        required: false
+        hint: "Photographer, source, or organization the image came from, e.g. \"Photo courtesy of Copperas Cove ISD.\""
       - label: "Opinion category (Opinion section only)"
         name: opinionCategory
         widget: select
@@ -82,6 +90,21 @@ collections:
         name: columnName
         widget: string
         required: false
+      - label: Corrections / update note
+        name: correctionsNote
+        widget: text
+        required: false
+        hint: "If this story was corrected or updated after publishing, say what changed here. Pair with the Updated date above."
+      - label: SEO title
+        name: seoTitle
+        widget: string
+        required: false
+        hint: "Optional. Overrides the browser tab / search-result title. Leave blank to just use the Title above."
+      - label: SEO description
+        name: seoDescription
+        widget: text
+        required: false
+        hint: "Optional. Overrides the search-result snippet. Leave blank to just use the Dek above."
       - label: Sources
         name: sources
         widget: list
