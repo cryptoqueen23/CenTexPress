@@ -57,3 +57,5 @@ const events = defineCollection({
 });
 
 export const collections = { stories, receipts, events };
+
+// TEST: scope-verification marker, harmless comment, will be reverted
