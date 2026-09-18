@@ -1,0 +1,35 @@
+# CODEOWNERS — CenTex Press
+#
+# Editorial content (stories, receipts, events) is intentionally left
+# unowned here: it only needs the one approval branch protection already
+# requires, consistent with the editorial workflow contributors use via
+# Sveltia CMS (Open Authoring, fork + pull request, zero repo permission).
+#
+# Everything else — CMS configuration, Astro/site code, Cloudflare Workers,
+# GitHub configuration, and build/dependency files — requires Mari's
+# explicit review before merge. This only takes effect because branch
+# protection has "Require review from Code Owners" enabled; without that,
+# this file is documentation only.
+
+# Astro/site code (broad rule)
+/src/                    @cryptoqueen23
+
+# ...except editorial content itself, which stays unowned
+/src/content/stories/
+/src/content/receipts/
+/src/content/events/
+
+# CMS configuration and admin UI
+/public/                 @cryptoqueen23
+
+# Cloudflare Worker (OAuth helper)
+/workers/                @cryptoqueen23
+
+# GitHub configuration (this file, branch rules documentation, etc.)
+/.github/                @cryptoqueen23
+
+# Build, deploy, and dependency files
+/astro.config.mjs        @cryptoqueen23
+/package.json             @cryptoqueen23
+/package-lock.json         @cryptoqueen23
+/.gitignore                @cryptoqueen23
