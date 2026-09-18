@@ -13,12 +13,18 @@ function allowedOrigins(env) {
 function refererIsAllowed(request, env) {
   const domains = allowedOrigins(env);
   if (domains.length === 0) return true;
-  const referer = request.headers.get('Referer') || '';
+  const referer = request.headers.get('Referer');
+  // Browsers frequently omit or strip the Referer header on cross-origin
+  // navigations (privacy settings, strict Referrer-Policy defaults, some
+  // extensions). That's normal, legitimate traffic, not an attack -- fail
+  // open here rather than block real users. Only block when a referer IS
+  // present and clearly points somewhere else.
+  if (!referer) return true;
   try {
     const host = new URL(referer).host;
     return domains.some((d) => host === d || host.endsWith(`.${d}`));
   } catch {
-    return false;
+    return true;
   }
 }
 
