@@ -1,0 +1,174 @@
+backend:
+  name: github
+  repo: cryptoqueen23/CenTexPress
+  branch: main
+  base_url: https://centex-press-cms-auth.truewolfflix777.workers.dev
+
+site_url: https://centexpress.xyz
+display_url: https://centexpress.xyz
+
+media_folder: "src/content/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: stories
+    label: Stories
+    label_singular: Story
+    folder: src/content/stories
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} — {{section}}"
+    sortable_fields: [published, title, section]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: "Dek (one-sentence summary)", name: description, widget: text }
+      - label: Section
+        name: section
+        widget: select
+        options: [Local, Government, Schools, Business, Community, Investigations, Opinion]
+      - label: Author
+        name: author
+        widget: string
+        default: CenTex Press
+      - label: Published
+        name: published
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: Updated
+        name: updated
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: Featured on homepage
+        name: featured
+        widget: boolean
+        default: false
+        hint: "Only one story should be featured at a time — it becomes the homepage lead."
+      - label: Draft (hide from the live site)
+        name: draft
+        widget: boolean
+        default: false
+      - label: Language
+        name: language
+        widget: select
+        options: [en, es]
+        default: en
+      - label: Hero image
+        name: image
+        widget: image
+        required: false
+        hint: "Optional. Shows at the top of the story. Always fill in Image alt text below when you add one."
+      - label: Image alt text
+        name: imageAlt
+        widget: string
+        required: false
+        hint: "Describe what the image actually shows — required for accessibility if an image is set."
+      - label: "Opinion category (Opinion section only)"
+        name: opinionCategory
+        widget: select
+        options: ["From the Publisher", "Community Voices", "Letters to the Editor"]
+        required: false
+        hint: "Only set this for Opinion pieces. From the Publisher = Mari's own signed columns. Community Voices = contributor commentary (gets an automatic disclaimer). Letters to the Editor = reader letters."
+      - label: "Author role (e.g. Publisher, CenTex Press)"
+        name: authorRole
+        widget: string
+        required: false
+      - label: "Recurring column name (e.g. Follow the Threads)"
+        name: columnName
+        widget: string
+        required: false
+      - label: Sources
+        name: sources
+        widget: list
+        required: false
+        default: []
+        fields:
+          - { label: Label, name: label, widget: string }
+          - { label: URL, name: url, widget: string }
+      - label: Body
+        name: body
+        widget: markdown
+
+  - name: receipts
+    label: The Receipts
+    label_singular: Document
+    folder: src/content/receipts
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} — {{agency}}"
+    sortable_fields: [documentDate, published, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Agency, name: agency, widget: string }
+      - label: Document type
+        name: documentType
+        widget: select
+        options: [Agenda, Budget, Ordinance, Contract, "Public Record", Audit, Report, Other]
+      - label: Document date
+        name: documentDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        hint: "The date on the document itself (e.g. the meeting date), not today's date."
+      - label: Published
+        name: published
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: Document URL
+        name: fileUrl
+        widget: string
+        hint: "Direct link to the document (a government site, a PDF link, etc.). File upload isn't wired up yet — link to where the document already lives."
+      - label: Related story
+        name: relatedStory
+        widget: string
+        required: false
+        hint: "Path to a CenTex Press story this document supports, e.g. /stories/your-story-slug"
+      - label: Language
+        name: language
+        widget: select
+        options: [en, es]
+        default: en
+
+  - name: events
+    label: Events
+    label_singular: Event
+    folder: src/content/events
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} — {{city}}"
+    sortable_fields: [startsAt, title, city]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - label: Starts at
+        name: startsAt
+        widget: datetime
+      - label: Ends at
+        name: endsAt
+        widget: datetime
+        required: false
+      - { label: Venue, name: venue, widget: string }
+      - { label: City, name: city, widget: string }
+      - label: Organizer
+        name: organizer
+        widget: string
+        required: false
+      - label: Event website / more info
+        name: url
+        widget: string
+        required: false
+      - label: Draft (hide from the live site)
+        name: draft
+        widget: boolean
+        default: false
