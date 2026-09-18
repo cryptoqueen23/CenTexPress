@@ -1,0 +1,76 @@
+backend:
+  name: github
+  repo: cryptoqueen23/CenTexPress
+  branch: main
+  base_url: https://centex-press-cms-auth.truewolfflix777.workers.dev
+  open_authoring: true
+
+publish_mode: editorial_workflow
+
+site_url: https://centexpress.xyz
+display_url: https://centexpress.xyz
+
+media_folder: "src/content/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: stories
+    label: My Stories
+    label_singular: Story
+    folder: src/content/stories
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} — {{section}}"
+    sortable_fields: [published, title, section]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: "Dek (one-sentence summary)", name: description, widget: text }
+      - label: Section
+        name: section
+        widget: select
+        options: [Local, Government, Schools, Business, Community, Investigations, Opinion]
+        hint: "Writing a personal opinion piece or commentary? Choose Opinion — it'll appear under Community Voices."
+      - label: Your name
+        name: author
+        widget: string
+        hint: "How your byline should read, e.g. \"Marquita Alvarez.\""
+      - label: Published date
+        name: published
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        default: "{{now}}"
+      - label: Language
+        name: language
+        widget: select
+        options: [en, es]
+        default: en
+      - label: Image
+        name: image
+        widget: image
+        required: false
+        hint: "Optional. Always fill in Image alt text below when you add one."
+      - label: Image alt text
+        name: imageAlt
+        widget: string
+        required: false
+        hint: "Describe what the image actually shows — required for accessibility if an image is set."
+      - label: Image credit
+        name: imageCredit
+        widget: string
+        required: false
+        hint: "Photographer, source, or organization the image came from."
+      - label: Sources
+        name: sources
+        widget: list
+        required: false
+        default: []
+        hint: "Links to documents, records, or sites backing up what you wrote."
+        fields:
+          - { label: Label, name: label, widget: string }
+          - { label: URL, name: url, widget: string }
+      - label: Your story
+        name: body
+        widget: markdown
