@@ -25,7 +25,16 @@ const reject = ['coupon','shopping','sale','deal','amazon','ebay','pinterest','h
 // it with job postings, every calendar event, bid postings, photo galleries).
 const officialNoise = ['job opening','job posting','now hiring','employment opportunity','request for proposal','request for qualifications','invitation to bid','photo gallery','photo album'];
 
-const clean = (s = '') => s.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, ' ').trim();
+// Some feeds (Google Alerts included) encode their own highlight markup as
+// HTML entities rather than raw tags -- "&lt;b&gt;Killeen&lt;/b&gt;" -- so
+// entities must decode to real tags BEFORE tag-stripping runs, or the
+// stripped-looking text still has literal "&lt;b&gt;" left in it.
+const clean = (s = '') => s
+  .replace(/<!\[CDATA\[|\]\]>/g, '')
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  .replace(/<[^>]*>/g, ' ')
+  .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+  .replace(/\s+/g, ' ').trim();
 const tag = (block, name) => clean(block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)<\\/${name}>`, 'i'))?.[1] || '');
 const attrLink = (block) => block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || tag(block, 'link');
 const parseDate = (value) => { const t = Date.parse(value); return Number.isNaN(t) ? 0 : t; };
