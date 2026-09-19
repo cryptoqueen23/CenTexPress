@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { ADVERTISERS } from '../data/advertisers.js';
+
+const expiresAt = (ad) =>
+  ad.startDate
+    ? new Date(new Date(ad.startDate).getTime() + ad.durationDays * 86400000).toISOString()
+    : null;
+---
+<BaseLayout
+  title="Local Partners | CenTex Press"
+  description="The Central Texas businesses supporting independent local journalism at CenTex Press."
+>
+<SiteHeader />
+<main id="main" class="container partners-page">
+  <header class="partners-head">
+    <h1>Local Partners</h1>
+    <p class="partners-tagline">The Central Texas businesses helping keep CenTex Press reporting free for everyone.</p>
+  </header>
+
+  <div class="partner-tabs" role="tablist" aria-label="Local Partners">
+    {ADVERTISERS.map((ad) => (
+      <button
+        type="button"
+        class="partner-tab"
+        role="tab"
+        aria-selected="false"
+        aria-controls={`panel-${ad.slug}`}
+        data-partner={ad.slug}
+        data-ad-expires={expiresAt(ad)}
+      >
+        {ad.advertiser}
+      </button>
+    ))}
+  </div>
+
+  <div class="partner-panels">
+    {ADVERTISERS.map((ad) => (
+      <div class="partner-panel" id={`panel-${ad.slug}`} data-partner-panel={ad.slug} role="tabpanel" hidden>
+        <p class="partner-tagline-text">{ad.tagline}</p>
+        <p class="partner-headline">{ad.headline}</p>
+        <a class="partner-cta" href={ad.href} target="_blank" rel="sponsored noopener noreferrer">{ad.cta} <span aria-hidden="true">→</span></a>
+      </div>
+    ))}
+  </div>
+
+  <p class="partners-join">Want your business here? <a href="/advertise">See advertising options →</a></p>
+</main>
+<SiteFooter />
+</BaseLayout>
+
+<script>
+  document.querySelectorAll('[data-ad-expires]').forEach((el) => {
+    const expires = el.getAttribute('data-ad-expires');
+    if (expires && Date.now() >= new Date(expires).getTime()) {
+      const panel = document.querySelector(`[data-partner-panel="${el.dataset.partner}"]`);
+      el.hidden = true;
+      if (panel) panel.hidden = true;
+    }
+  });
+
+  const tabs = document.querySelectorAll('.partner-tab');
+  const panels = document.querySelectorAll('.partner-panel');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const wasOpen = tab.getAttribute('aria-selected') === 'true';
+      tabs.forEach((t) => t.setAttribute('aria-selected', 'false'));
+      panels.forEach((p) => { p.classList.remove('open'); p.hidden = true; });
+
+      if (!wasOpen) {
+        tab.setAttribute('aria-selected', 'true');
+        const panel = document.querySelector(`[data-partner-panel="${tab.dataset.partner}"]`);
+        if (panel) {
+          panel.hidden = false;
+          requestAnimationFrame(() => panel.classList.add('open'));
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+.partners-page{padding-block:clamp(2.5rem,7vw,6rem);max-width:800px}
+.partners-head{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:2rem}
+.partners-head h1{font:900 clamp(2.2rem,6vw,4rem)/.98 Georgia,serif;letter-spacing:-.04em;margin:0 0 .6rem}
+.partners-tagline{font:700 clamp(1rem,2.2vw,1.25rem)/1.35 Georgia,serif;color:var(--brand);margin:0;max-width:55ch}
+.partner-tabs{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem}
+.partner-tab{min-height:44px;padding:.7rem 1.2rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:.95rem;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.partner-tab:hover{transform:translateY(-2px);border-color:var(--brand)}
+.partner-tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.partner-panel{overflow:hidden;max-height:0;opacity:0;padding:0;border-width:0;transition:max-height .4s ease,opacity .3s ease;background:var(--surface)}
+.partner-panel.open{max-height:400px;opacity:1;padding:1.5rem;border:1px solid var(--line);margin-bottom:1rem}
+.partner-tagline-text{font-weight:800;color:var(--ink);font-size:1.1rem;margin:0 0 .6rem}
+.partner-headline{color:var(--muted);margin:0 0 1rem;max-width:65ch}
+.partner-cta{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:900;color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:.2rem}
+.partners-join{margin-top:2rem;color:var(--muted)}
+.partners-join a{color:var(--ink);font-weight:800}
+@media(prefers-reduced-motion:reduce){.partner-tab,.partner-panel{transition:none}}
+</style>

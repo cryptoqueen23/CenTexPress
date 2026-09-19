@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import AdSlot from '../components/AdSlot.astro';
+import { ADVERTISERS } from '../data/advertisers.js';
 const stories=(await getCollection('stories')).filter(s=>!s.data.draft&&s.data.language==='en').sort((a,b)=>b.data.published.valueOf()-a.data.published.valueOf());
 const featured=stories.find(s=>s.data.featured)||stories[0];
 const remaining=stories.filter(s=>s.id!==featured?.id);
@@ -21,16 +22,7 @@ const storyUrl=(s)=>`/stories/${s.id.replace(/\.(md|mdx)$/,'')}`;
 </section>
 <section class="live container"><div class="live-label"><span class="pulse" aria-hidden="true"></span><div><strong>Live Wire</strong><small>Central Texas, as it happens.</small></div></div><div class="live-copy">Breaking news, developing stories, public safety alerts, government updates and noteworthy reports from across the region, gathered in one continuously updated feed.</div><a class="view-all" href="/live-wire">See Live Wire <span aria-hidden="true">→</span></a></section>
 <div class="container">
-  <AdSlot startDate="2026-09-17" durationDays={30} />
-  <AdSlot
-    advertiser="ProComm Cleaning"
-    href="https://www.facebook.com/profile.php?id=61558711802428"
-    tagline="A cleaner space, without the hassle."
-    headline="Professional cleaning for homes and businesses in Gatesville and Central Texas. Tell ProComm, “Mari sent me.”"
-    cta="Visit ProComm Cleaning"
-    startDate="2026-09-17"
-    durationDays={30}
-  />
+  {ADVERTISERS.map((ad) => <AdSlot {...ad} />)}
 </div>
 <section class="container section"><header class="section-head"><div><span class="eyebrow">From across Central Texas</span><h2 class="section-title">Latest</h2></div><a href="/latest">View all stories →</a></header><div class="story-grid">{latest.map((story,i)=><article class="story-card">{story.data.image ? <Image class="photo card-photo" src={story.data.image} alt="" /> : <div class={`photo card-photo photo-${i+2}`} aria-hidden="true"></div>}<span class="eyebrow">{story.data.section}</span><h3>{story.data.title}</h3><p>{story.data.description}</p><a href={storyUrl(story)}>Read story →</a></article>)}</div></section>
 <nav class="quick container" aria-label="Newsroom tools"><a href="/government"><b>Government Watch</b><span>Councils, courts, budgets and votes</span></a><a href="/receipts"><b>The Receipts</b><span>Read the documents for yourself</span></a><a href="/live-wire"><b>Live Wire</b><span>What's happening right now</span></a><a href="/events"><b>Events</b><span>What's happening around CenTex</span></a><a href="/contact"><b>Send a Tip</b><span>Know something we should?</span></a></nav>
