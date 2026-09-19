@@ -1,8 +1,9 @@
 ---
 import { LIVE_WIRE_SOURCES } from '../data/liveWireSources.js';
-import { discoverLiveWireItems, sourceLabel } from '../lib/liveWireDiscovery.js';
+import { discoverLiveWireItems, selectLiveWirePools, sourceLabel, LIVE_WIRE_TICKER_CONFIG } from '../lib/liveWireDiscovery.js';
 
-const { items } = await discoverLiveWireItems(LIVE_WIRE_SOURCES);
+const { items: pool } = await discoverLiveWireItems(LIVE_WIRE_SOURCES);
+const items = selectLiveWirePools(pool, LIVE_WIRE_TICKER_CONFIG);
 ---
 {items.length>0&&<aside class="news-ticker" aria-label="Latest news from external sources"><div class="ticker-inner container"><strong class="ticker-label"><span aria-hidden="true"></span>Latest News</strong><div class="ticker-window"><div class="ticker-track">{[...items,...items].map(item=><a href={item.link} target="_blank" rel="noopener noreferrer" class={item.sourceType?.startsWith('official-') ? 'official' : ''}><b>{item.title}</b><small>{sourceLabel(item)}</small></a>)}</div></div><a class="ticker-more" href="/live-wire">Live Wire →</a></div></aside>}
 <style>

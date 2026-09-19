@@ -189,15 +189,18 @@ let cachedResult = null;
 /**
  * Fetch, filter, and dedupe items across every enabled source in the
  * registry. Returns { items, report } -- report is this build's per-source
- * outcome, logged to the console, not persisted anywhere.
+ * outcome, logged to the console, not persisted anywhere. `items` is the
+ * full deduped pool sorted newest-first, NOT sliced to any display count --
+ * slicing is a rendering decision (see selectLiveWirePools) made by each
+ * caller, not something baked into the shared cached fetch.
  */
-export async function discoverLiveWireItems(sources, { limit = 18 } = {}) {
+export async function discoverLiveWireItems(sources) {
   if (cachedResult) return cachedResult;
-  cachedResult = await fetchAndProcess(sources, limit);
+  cachedResult = await fetchAndProcess(sources);
   return cachedResult;
 }
 
-async function fetchAndProcess(sources, limit) {
+async function fetchAndProcess(sources) {
   const results = await Promise.allSettled(sources.map(fetchSource));
   const outcomes = results.map((r) => (r.status === 'fulfilled' ? r.value : { source: null, items: [], error: String(r.reason), skipped: false }));
 
@@ -227,8 +230,85 @@ async function fetchAndProcess(sources, limit) {
       seenLinks.add(linkKey);
       return true;
     })
-    .sort((a, b) => parseDate(b.published) - parseDate(a.published))
-    .slice(0, limit);
+    .sort((a, b) => parseDate(b.published) - parseDate(a.published));
 
   return { items, report };
 }
+
+// A rolling eligibility window, not a promise of 10 days' visibility --
+// as a source publishes something newer, the newer item naturally takes
+// the older one's place in the pool this filters from.
+export const OFFICIAL_FRESHNESS_DAYS = 10;
+
+// feedLabel is registry metadata, known at source-configuration time --
+// matching against it is a lookup, not classification. A combined label
+// like "Road/Trash Alerts" or "Weather/Facility Closures" mixes a safety
+// concept with a non-safety one and can't be split reliably from the
+// label alone, so it's deliberately left out and falls back to Government.
+const PUBLIC_SAFETY_LABELS = new Set([
+  'Emergency Alerts',
+  'Police Alerts',
+  'Fire Alerts',
+  'Water Alerts',
+  'Water Notices',
+  'Street Closures',
+  'Road Closures',
+  'Traffic Alerts',
+  'Severe Weather',
+  'Weather Alerts',
+]);
+
+// The reader-facing filter category for one item -- derived only from
+// structured fields already on it, no AI, no guessing.
+export function itemCategory(item) {
+  if (item.sourceType === 'news-media') return 'news';
+  if (item.sourceType === 'official-school') return 'schools';
+  if (item.feedLabel && PUBLIC_SAFETY_LABELS.has(item.feedLabel)) return 'public-safety';
+  return 'government';
+}
+
+// Selects a bounded, source-diverse set from the shared pool for one
+// renderer (the ticker, the full /live-wire page). Kept independent of
+// any page/component so both can reuse it with their own total/reservedOfficial.
+//
+// 1. Official candidates are whatever's within the freshness window.
+// 2. Round 1 takes the single newest qualifying item per distinct
+//    official source, so one high-volume source (CCISD) can't crowd out
+//    a low-volume one (Copperas Cove) before diversity is guaranteed.
+// 3. Round 2 fills any remaining reserved official slots by pure
+//    recency across whatever's left.
+// 4. Any reserved official slots that still go unfilled -- because
+//    fewer qualifying official items exist than reserved slots -- fall
+//    back to media rather than being padded with stale material.
+// 5. Media fills everything else, newest-first.
+// `pool` is already sorted newest-first (see fetchAndProcess), and
+// filtering a sorted array preserves that order, so nothing here needs
+// to re-sort until the final chronological merge.
+export function selectLiveWirePools(pool, { total, reservedOfficial, freshDays = OFFICIAL_FRESHNESS_DAYS }) {
+  const now = Date.now();
+  const ageDays = (item) => (now - parseDate(item.published)) / 86400000;
+
+  const official = pool.filter((item) => item.sourceType?.startsWith('official-') && ageDays(item) <= freshDays);
+  const media = pool.filter((item) => item.sourceType === 'news-media');
+
+  const seenSources = new Set();
+  const round1 = [];
+  for (const item of official) {
+    if (!seenSources.has(item.sourceName)) {
+      seenSources.add(item.sourceName);
+      round1.push(item);
+    }
+  }
+  const round1Links = new Set(round1.map((item) => item.link));
+  const round2 = official
+    .filter((item) => !round1Links.has(item.link))
+    .slice(0, Math.max(0, reservedOfficial - round1.length));
+
+  const selectedOfficial = [...round1, ...round2].slice(0, reservedOfficial);
+  const selectedMedia = media.slice(0, total - selectedOfficial.length);
+
+  return [...selectedOfficial, ...selectedMedia].sort((a, b) => parseDate(b.published) - parseDate(a.published));
+}
+
+export const LIVE_WIRE_FULL_PAGE_CONFIG = { total: 28, reservedOfficial: 8, freshDays: OFFICIAL_FRESHNESS_DAYS };
+export const LIVE_WIRE_TICKER_CONFIG = { total: 18, reservedOfficial: 3, freshDays: OFFICIAL_FRESHNESS_DAYS };
