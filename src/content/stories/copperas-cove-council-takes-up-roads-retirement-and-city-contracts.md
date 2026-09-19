@@ -3,12 +3,11 @@ title: Copperas Cove Council Takes Up Roads, Retirement and City Contracts
 description: Copperas Cove City Council addressed roadway improvements, employee retirement contributions, school policing services and a city construction contract during its September 15 meeting.
 section: Government
 author: Marimer Cruz-Nieves
-published: ''
-updated: ''
+published: 2026-09-18
 featured: true
 draft: false
 language: en
-image: /uploads/ChatGPT Image Sep 18, 2026, 07_27_15 PM.png
+image: ./copperas-cove-council-chamber.png
 imageAlt: Empty city council chamber with a council dais, American and Texas flags, representing Copperas Cove City Council government coverage.
 imageCredit: AI-generated illustration
 opinionCategory: From the Publisher
