@@ -14,3 +14,12 @@ export const sections = {
   corrections: ['Corrections', null, 'How CenTex Press handles and documents factual corrections.'],
   search: ['Search', null, 'Find published CenTex Press reporting by headline, description or section.'],
 };
+
+// Presentation-only label overrides for reader-facing section display.
+// The content schema enum, routes and CMS values are unaffected — this
+// only changes what readers see rendered.
+const SECTION_DISPLAY_NAMES = {
+  Business: 'Local Business',
+};
+
+export const displaySectionName = (section) => SECTION_DISPLAY_NAMES[section] || section;

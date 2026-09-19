@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
+import { displaySectionName } from '../../data/sections.js';
 export async function getStaticPaths(){
   const stories = (await getCollection('stories')).filter(s => !s.data.draft);
   return stories.map(story => ({ params:{ id:story.id.replace(/\.(md|mdx)$/,'') }, props:{ story } }));
@@ -12,7 +13,7 @@ const { Content } = await render(story);
 const sectionHref = `/${story.data.section.toLowerCase()}`;
 const kicker = story.data.opinionCategory
   ? `${story.data.opinionCategory}${story.data.columnName ? ` | ${story.data.columnName}` : ''}`
-  : story.data.section;
+  : displaySectionName(story.data.section);
 ---
 <BaseLayout title={`${story.data.title} | CenTex Press`} description={story.data.description}>
 <SiteHeader />
