@@ -10,8 +10,8 @@ publish_mode: editorial_workflow
 site_url: https://centexpress.xyz
 display_url: https://centexpress.xyz
 
-media_folder: "src/content/uploads"
-public_folder: "/uploads"
+media_folder: ""
+public_folder: ""
 
 collections:
   - name: stories

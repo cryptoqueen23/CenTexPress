@@ -1,6 +1,12 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+// CMS forms (Sveltia) write blank optional fields as empty strings, not
+// omitted keys. z.coerce.date() chokes on '' regardless of .optional(),
+// since '' is present, not undefined. Treat '' as "not set" for date
+// fields the CMS might send blank.
+const optionalDate = z.preprocess((val) => (val === '' ? undefined : val), z.coerce.date().optional());
+
 const stories = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/stories' }),
   schema: ({ image }) => z.object({
@@ -8,7 +14,7 @@ const stories = defineCollection({
     description: z.string(),
     section: z.enum(['Local','Government','Schools','Business','Community','Investigations','Opinion']),
     published: z.coerce.date(),
-    updated: z.coerce.date().optional(),
+    updated: optionalDate,
     author: z.string().default('CenTex Press'),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
@@ -47,7 +53,7 @@ const events = defineCollection({
     title: z.string(),
     description: z.string(),
     startsAt: z.coerce.date(),
-    endsAt: z.coerce.date().optional(),
+    endsAt: optionalDate,
     venue: z.string(),
     city: z.string(),
     organizer: z.string().optional(),

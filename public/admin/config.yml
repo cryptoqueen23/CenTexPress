@@ -10,8 +10,8 @@ publish_mode: editorial_workflow
 site_url: https://centexpress.xyz
 display_url: https://centexpress.xyz
 
-media_folder: "src/content/uploads"
-public_folder: "/uploads"
+media_folder: ""
+public_folder: ""
 
 collections:
   - name: stories
@@ -40,6 +40,7 @@ collections:
         format: "YYYY-MM-DD"
         date_format: "YYYY-MM-DD"
         time_format: false
+        default: "{{now}}"
       - label: Updated
         name: updated
         widget: datetime
@@ -147,6 +148,7 @@ collections:
         format: "YYYY-MM-DD"
         date_format: "YYYY-MM-DD"
         time_format: false
+        default: "{{now}}"
       - label: Document URL
         name: fileUrl
         widget: string
