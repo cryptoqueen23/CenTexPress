@@ -25,18 +25,44 @@ const reject = ['coupon','shopping','sale','deal','amazon','ebay','pinterest','h
 // it with job postings, every calendar event, bid postings, photo galleries).
 const officialNoise = ['job opening','job posting','now hiring','employment opportunity','request for proposal','request for qualifications','invitation to bid','photo gallery','photo album'];
 
-// Some feeds (Google Alerts included) encode their own highlight markup as
-// HTML entities rather than raw tags -- "&lt;b&gt;Killeen&lt;/b&gt;" -- so
-// entities must decode to real tags BEFORE tag-stripping runs, or the
-// stripped-looking text still has literal "&lt;b&gt;" left in it.
-const clean = (s = '') => s
-  .replace(/<!\[CDATA\[|\]\]>/g, '')
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+// Some feeds double-encode entities at the source -- "Live &amp;amp; On
+// Demand" instead of "Live &amp; On Demand" -- so a single decode pass
+// leaves one layer behind. Decode repeatedly until the string stops
+// changing, with a small hard cap so a pathological input can't loop
+// forever.
+function decodeEntities(s) {
+  let prev = s;
+  for (let i = 0; i < 5; i += 1) {
+    const next = prev
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+    if (next === prev) return next;
+    prev = next;
+  }
+  return prev;
+}
+
+// Entities decode fully before tag-stripping, so "&lt;b&gt;" resolves to a
+// real <b> tag first and then gets stripped like any other tag, rather
+// than surviving as literal text.
+const clean = (s = '') => decodeEntities(s.replace(/<!\[CDATA\[|\]\]>/g, ''))
   .replace(/<[^>]*>/g, ' ')
-  .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
   .replace(/\s+/g, ' ').trim();
 const tag = (block, name) => clean(block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)<\\/${name}>`, 'i'))?.[1] || '');
-const attrLink = (block) => block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1] || tag(block, 'link');
+// Atom's <link href="..."> stores its value as an XML-escaped attribute
+// ("&amp;" for a real "&" in the URL) -- unlike tag(), which already
+// decodes via clean(), this path bypassed decoding entirely, so a
+// same-page URL parse later saw literal "&amp;" instead of "&" and
+// silently failed to split query params. Decode this path the same way.
+const attrLink = (block) => {
+  const hrefMatch = block.match(/<link[^>]+href=["']([^"']+)["']/i)?.[1];
+  return hrefMatch ? decodeEntities(hrefMatch) : tag(block, 'link');
+};
 const parseDate = (value) => { const t = Date.parse(value); return Number.isNaN(t) ? 0 : t; };
 
 // Handles both RSS <item> and Atom <entry> the same way -- covers
@@ -49,6 +75,61 @@ const parseFeed = (xml) => [...xml.matchAll(/<(entry|item)\b[\s\S]*?<\/\1>/gi)]
     summary: tag(block, 'summary') || tag(block, 'description'),
     published: tag(block, 'published') || tag(block, 'updated') || tag(block, 'pubDate'),
   }));
+
+// Google Alerts links go through a google.com/url?...&url=<real> redirect
+// rather than the publisher's own URL. Unwrapping it gives both a cleaner
+// "links to the original source" destination and something to derive a
+// real outlet name from.
+function unwrapRedirect(link) {
+  try {
+    const u = new URL(link);
+    if (/(^|\.)google\.com$/.test(u.hostname) && u.searchParams.has('url')) {
+      return u.searchParams.get('url');
+    }
+  } catch { /* not a parseable URL, leave as-is */ }
+  return link;
+}
+
+// Small, known-outlet map so common Central Texas sources show their real
+// name ("KWTX") instead of the generic "External source". Anything not in
+// the map falls back to a capitalized version of its domain rather than
+// going unlabeled.
+const KNOWN_OUTLETS = {
+  'kwtx.com': 'KWTX',
+  'kcentv.com': 'KCEN',
+  'kdhnews.com': 'Killeen Daily Herald',
+  'fox44news.com': 'FOX 44 News',
+  'statesman.com': 'Austin American-Statesman',
+  'texastribune.org': 'The Texas Tribune',
+  'tpr.org': 'Texas Public Radio',
+  'kut.org': 'KUT News',
+  'communityimpact.com': 'Community Impact',
+  'mysanantonio.com': 'San Antonio Express-News',
+  'legacy.com': 'Legacy.com',
+  'youtube.com': 'YouTube',
+  'kvue.com': 'KVUE',
+  'govtech.com': 'GovTech',
+  'nfhsnetwork.com': 'NFHS Network',
+};
+
+function deriveOutletName(link) {
+  try {
+    const host = new URL(link).hostname.replace(/^www\./, '');
+    if (KNOWN_OUTLETS[host]) return KNOWN_OUTLETS[host];
+    const base = host.split('.')[0];
+    return base ? base.charAt(0).toUpperCase() + base.slice(1) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Shared so the ticker and /live-wire render the identical label for the
+// identical item -- no per-page reimplementation to drift out of sync.
+export function sourceLabel(item) {
+  if (item.sourceType?.startsWith('official-')) return `Official · ${item.sourceName}`;
+  if (item.sourceType === 'news-media') return `External · ${item.outletName || item.sourceName}`;
+  return item.sourceName;
+}
 
 const normalizeTitle = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const normalizeLink = (link) => link.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
@@ -76,14 +157,19 @@ async function fetchSource(source) {
     if (!res.ok) {
       return { source, items: [], error: `HTTP ${res.status}`, skipped: false };
     }
-    const items = parseFeed(await res.text()).map((item) => ({
-      ...item,
-      sourceName: source.name,
-      sourceType: source.sourceType,
-      jurisdiction: source.jurisdiction,
-      websiteUrl: source.websiteUrl,
-      feedLabel: source.feedLabel,
-    }));
+    const items = parseFeed(await res.text()).map((item) => {
+      const link = source.sourceType === 'news-media' ? unwrapRedirect(item.link) : item.link;
+      return {
+        ...item,
+        link,
+        sourceName: source.name,
+        sourceType: source.sourceType,
+        jurisdiction: source.jurisdiction,
+        websiteUrl: source.websiteUrl,
+        feedLabel: source.feedLabel,
+        outletName: source.sourceType === 'news-media' ? deriveOutletName(link) : null,
+      };
+    });
     return { source, items, error: null, skipped: false };
   } catch (err) {
     return { source, items: [], error: String(err), skipped: false };
