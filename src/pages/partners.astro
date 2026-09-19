@@ -88,15 +88,16 @@ const expiresAt = (ad) =>
 .partners-head h1{font:900 clamp(2.2rem,6vw,4rem)/.98 Georgia,serif;letter-spacing:-.04em;margin:0 0 .6rem}
 .partners-tagline{font:700 clamp(1rem,2.2vw,1.25rem)/1.35 Georgia,serif;color:var(--brand);margin:0;max-width:55ch}
 .partner-tabs{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem}
-.partner-tab{min-height:44px;padding:.7rem 1.2rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:.95rem;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.partner-tab{min-height:44px;padding:.7rem 1.2rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:.95rem;cursor:pointer;transition:transform .18s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease}
 .partner-tab:hover{transform:translateY(-2px);border-color:var(--brand)}
-.partner-tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
-.partner-panel{overflow:hidden;max-height:0;opacity:0;padding:0;border-width:0;transition:max-height .4s ease,opacity .3s ease;background:var(--surface)}
-.partner-panel.open{max-height:400px;opacity:1;padding:1.5rem;border:1px solid var(--line);margin-bottom:1rem}
+.partner-tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff;animation:tab-pop .32s ease}
+.partner-panel{overflow:hidden;max-height:0;opacity:0;padding:0;border-width:0;transform:translateY(-6px);transition:max-height .4s ease,opacity .3s ease,transform .3s ease;background:var(--surface)}
+.partner-panel.open{max-height:400px;opacity:1;transform:translateY(0);padding:1.5rem;border:1px solid var(--line);margin-bottom:1rem}
+@keyframes tab-pop{0%{transform:scale(1)}45%{transform:scale(1.06)}100%{transform:scale(1)}}
 .partner-tagline-text{font-weight:800;color:var(--ink);font-size:1.1rem;margin:0 0 .6rem}
 .partner-headline{color:var(--muted);margin:0 0 1rem;max-width:65ch}
 .partner-cta{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:900;color:var(--ink);border-bottom:2px solid var(--brand);padding-bottom:.2rem}
 .partners-join{margin-top:2rem;color:var(--muted)}
 .partners-join a{color:var(--ink);font-weight:800}
-@media(prefers-reduced-motion:reduce){.partner-tab,.partner-panel{transition:none}}
+@media(prefers-reduced-motion:reduce){.partner-tab,.partner-panel{transition:none;animation:none}}
 </style>
